@@ -7,7 +7,7 @@ import axios from "axios";
 import IconButton from "@mui/material/IconButton";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import Button from "@mui/material/Button";
-import ArrowBack from "@mui/icons-material//ArrowBack";
+import ArrowBack from "@mui/icons-material/ArrowBack";
 import Glb3dViewer from "./glbviewer";
 import { Swiper, SwiperRef, SwiperSlide } from "swiper/react";
 import Stepper from "@mui/material/Stepper";
