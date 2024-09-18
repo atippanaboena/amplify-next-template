@@ -11,6 +11,7 @@
   "dependencies": {
     "@aws-amplify/ui-react": "^6.1.13",
     "aws-amplify": "^6.4.0",
+    "axios": "^1.7.7",
     "next": "14.1.1",
     "react": "^18",
     "react-dom": "^18"
