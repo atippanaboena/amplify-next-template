@@ -13,6 +13,7 @@ import { Swiper, SwiperRef, SwiperSlide } from "swiper/react";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
+import LinearProgress from "@mui/material/LinearProgress";
 
 // Import Swiper styles
 import "swiper/css";
@@ -86,10 +87,10 @@ export default function Page({ params }: { params: { capture: string } }) {
           if (executionId) {
             axios.get(`${process.env.NEXT_PUBLIC_NEURO_API_URL}/capture/${params.capture}/status/${executionId}`).then((results) => {
               const status = results.data?.current_state;
-              if (status === "JOB_COMPLETED") {
-                setPolling(false);
-                clearInterval(interval);
-              }
+              // if (status === "JOB_COMPLETED") {
+              //   setPolling(false);
+              //   clearInterval(interval);
+              // }
               if (["JOB_COMPLETED", "MODEL_INFERENCE_INITIATED", "SPATIAL_REASONING_INITIATED"].includes(status)) {
                 setJobStatus(status);
               } else {
@@ -99,46 +100,55 @@ export default function Page({ params }: { params: { capture: string } }) {
           }
         });
       }, 5000);
+      return () => clearInterval(interval);
     }
   }, [polling, data]);
 
   const getActiveStep = (status: string) => {
     switch (status) {
       case "JOB_INITIATED":
-        return 0;
-      case "MODEL_INFERENCE_INITIATED":
         return 1;
-      case "SPATIAL_REASONING_INITIATED":
+      case "MODEL_INFERENCE_INITIATED":
         return 2;
-      case "JOB_COMPLETED":
+      case "SPATIAL_REASONING_INITIATED":
         return 3;
+      case "JOB_COMPLETED":
+        return 4;
       default:
         return 0;
     }
   };
 
   return (
-    <div className="flex flex-col w-full h-full gap-4">
+    <div className="flex flex-col w-full h-full gap-4 rounded-lg">
       <div>
         <Button onClick={() => router.push("/neuro3d")} startIcon={<ArrowBack />} variant="outlined">
           Back
         </Button>
       </div>
-      {jobStatus !== "JOB_COMPLETED" && (
-        <Stepper activeStep={getActiveStep(jobStatus)}>
-          <Step>
-            <StepLabel>Job Initiated</StepLabel>
-          </Step>
-          <Step>
-            <StepLabel>Model Inference Initiated</StepLabel>
-          </Step>
-          <Step>
-            <StepLabel>Spatial Reasoning Initiated</StepLabel>
-          </Step>
-          <Step>
-            <StepLabel>Job Completed</StepLabel>
-          </Step>
-        </Stepper>
+      {polling && (
+        <>
+          <div className="h-10">
+            <LinearProgress variant="buffer" value={(getActiveStep(jobStatus) - 1) * 25} valueBuffer={getActiveStep(jobStatus) * 25 - 5} />
+          </div>
+          <Stepper activeStep={getActiveStep(jobStatus)}>
+            <Step>
+              <StepLabel>Job Initiated</StepLabel>
+            </Step>
+            <Step>
+              <StepLabel>Model Inference Initiated</StepLabel>
+            </Step>
+            <Step>
+              <StepLabel>Spatial Reasoning Initiated</StepLabel>
+            </Step>
+            <Step>
+              <StepLabel>Job Completed</StepLabel>
+            </Step>
+            <Step>
+              <StepLabel>Upload Results</StepLabel>
+            </Step>
+          </Stepper>
+        </>
       )}
       <div className="flex w-full gap-4">
         <div className="flex flex-col w-1/2">
@@ -152,7 +162,9 @@ export default function Page({ params }: { params: { capture: string } }) {
           </Swiper>
 
           <div style={{ display: "flex", gap: 10 }} className="m-3 flex flex-row flex-wrap">
-            {data?.images?.map((image: any, index: number) => <img data-testid={`image-thumbnail-${index}`} onClick={() => setActiveIndex(index)} src={image?.url} key={index} style={{ width: "100px", height: "auto", marginBottom: "10px", cursor: "pointer" }} />)}
+            {data?.images?.map((image: any, index: number) => (
+              <img data-testid={`image-thumbnail-${index}`} onClick={() => setActiveIndex(index)} src={image?.url} key={index} style={{ width: "100px", height: "auto", marginBottom: "10px", cursor: "pointer" }} />
+            ))}
           </div>
         </div>
         <div className="h-full w-1/2">

@@ -3,6 +3,7 @@ import { AuthError } from "next-auth";
 import type { Metadata } from "next";
 import { useRouter } from "next/router";
 import { redirect } from "next/navigation";
+import Paper from "@mui/material/Paper";
 
 export const metadata: Metadata = {
   title: "Authentication",
@@ -11,16 +12,16 @@ export const metadata: Metadata = {
 
 export default async function SignInPage() {
   const session = await auth();
-  
+
   if (session) {
     redirect("/"); // Redirect to the home page if the user is already authenticated");
   }
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900">
+    <Paper>
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <a href="#" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 bg-white p-2 rounded-lg">
-          <img alt="Hosta a.i" src="https://dev.hosta.ai/static/media/HostaAI_LogoWithTagline.79b513db.png" className="mx-auto h-10 w-auto" />
+          <img alt="Hosta a.i" src="https://dev.hosta.ai/static/media/HostaAI_LogoWithTagline.79b513db.png" className="mx-auto h-16 w-auto" />
         </a>
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -73,6 +74,6 @@ export default async function SignInPage() {
           </div>
         </div>
       </div>
-    </section>
+    </Paper>
   );
 }

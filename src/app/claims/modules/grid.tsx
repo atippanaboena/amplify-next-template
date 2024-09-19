@@ -3,8 +3,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import { BodyScrollEndEvent, ColDef, GridReadyEvent, IDatasource, ModuleRegistry } from "@ag-grid-community/core";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
 import { AgGridReact, CustomCellRendererProps } from "@ag-grid-community/react";
-import "@ag-grid-community/styles/ag-grid.css";
-import "@ag-grid-community/styles/ag-theme-quartz.css";
+import "@ag-grid-community/styles/ag-grid.min.css";
+import "@ag-grid-community/styles/ag-theme-alpine.min.css";
 import axios from "axios";
 import Slider from "@mui/material/Slider";
 import GridFilters from "./filters";
@@ -54,7 +54,7 @@ const Grid = () => {
           return new Date(params.value).toLocaleString();
         }
       : undefined;
-    return { ...col, autoHeight: true, wrapText: true, rowDrag: false, cellClass: "flex items-center" };
+    return { ...col, rowDrag: false, cellClass: "flex items-center" };
   });
 
   const fetchRows = async (type: "scroll" | "initial") => {
@@ -144,7 +144,7 @@ const Grid = () => {
             })}
         </div>
       )}
-      <div className="h-full w-full ag-theme-quartz-auto-dark">
+      <div className="h-full w-full ag-theme-alpine-auto-dark">
         <AgGridReact loading={loading} columnDefs={gridCols} rowData={rowData} onBodyScrollEnd={onBodyScrollEnd} />
       </div>
     </div>

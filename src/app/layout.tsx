@@ -6,6 +6,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "@/theme";
 import { auth } from "@/auth";
+import { Paper } from "@mui/material";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -33,17 +34,19 @@ export default async function RootLayout({
 
   return (
     <html className="h-full" lang="en">
-      <body className={`antialiased h-full bg-gray-50 dark:bg-gray-900`}>
-        <div id="root" className="h-full w-fuull max-w-[1920px]">
+      <body className={`antialiased h-full`}>
+        <div id="root" className="h-full w-full max-w-[1920px]">
           <AppRouterCacheProvider>
             <ThemeProvider theme={theme}>
-                <SessionProvider session={session}>
-                  <Header />
+              <SessionProvider session={session}>
+                <Header />
+                <Paper className='h-full'>
                   <div className="w-full h-full px-6">
                     <div className="h-[80px]" />
                     <div className="h-[calc(100%-110px)]">{children}</div>
                   </div>
-                </SessionProvider>
+                </Paper>
+              </SessionProvider>
             </ThemeProvider>
           </AppRouterCacheProvider>
         </div>

@@ -3,8 +3,8 @@ import React, { use, useCallback, useEffect, useState } from "react";
 import { BodyScrollEndEvent, ColDef, GridReadyEvent, IDatasource, ModuleRegistry } from "@ag-grid-community/core";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
 import { AgGridReact, CustomCellRendererProps } from "@ag-grid-community/react";
-import "@ag-grid-community/styles/ag-grid.css";
-import "@ag-grid-community/styles/ag-theme-quartz.css";
+import "@ag-grid-community/styles/ag-grid.min.css";
+import "@ag-grid-community/styles/ag-theme-alpine.min.css";
 import axios from "axios";
 import Pagination from "@mui/material/Pagination";
 import IconButton from "@mui/material/IconButton";
@@ -120,7 +120,7 @@ const Grid = () => {
     { field: "actions", headerName: "Actions", cellRenderer: ActionsRenderer, pinned: "left" },
     { field: "claimId", headerName: "Claim ID", pinned: "left", minWidth: 320 },
     { field: "customerID", headerName: "Customer ID", flex: 1 },
-    { field: "address", headerName: "Address", flex: 1, autoHeight: true, wrapText: true },
+    { field: "address", headerName: "Address", flex: 1},
     { field: "timeInitiated", headerName: "Date Initiated", flex: 0.5, valueFormatter: (params) => new Date(params.value * 1000).toLocaleDateString() },
   ];
 
@@ -174,7 +174,7 @@ const Grid = () => {
               )}
             </div>
           </div>
-          <div className="h-full w-full ag-theme-quartz-auto-dark">
+          <div className="h-full w-full ag-theme-alpine-auto-dark">
             <AgGridReact loading={loading} columnDefs={columns} rowData={rowData} />
           </div>
           <Pagination page={page} onChange={handleChange} count={Math.ceil(total / 10)} />
