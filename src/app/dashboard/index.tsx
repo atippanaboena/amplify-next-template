@@ -53,9 +53,9 @@ const Dashboard = () => {
 
           {/* Card 4: Pending Approvals */}
           <Paper className="p-4" elevation={10}>
-            <h2 className="text-xl font-semibold mb-2">Rooms sent for Resubmission</h2>
+            <h2 className="text-xl font-semibold mb-2">Resubmission</h2>
             <p className="text-2xl font-bold text-yellow-500">15</p>
-            <p className="text-gray-600">Waiting for New Images</p>
+            <p className="text-gray-600">Rooms Waiting for New Images</p>
           </Paper>
 
           {/* Card 5: Pending Approvals */}
