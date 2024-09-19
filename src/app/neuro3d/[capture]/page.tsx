@@ -142,10 +142,10 @@ export default function Page({ params }: { params: { capture: string } }) {
               <StepLabel>Spatial Reasoning Initiated</StepLabel>
             </Step>
             <Step>
-              <StepLabel>Job Completed</StepLabel>
+              <StepLabel>Upload Results</StepLabel>
             </Step>
             <Step>
-              <StepLabel>Upload Results</StepLabel>
+              <StepLabel>Job Completed</StepLabel>
             </Step>
           </Stepper>
         </>

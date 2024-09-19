@@ -1,4 +1,5 @@
+import Dashboard from "./dashboard";
 
 export default function Home() {
-  return 'Dashboard Coming Soon';
+  return <Dashboard />
 }
