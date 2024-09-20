@@ -9,6 +9,11 @@ frontend:
   phases:
     build:
       commands:
+        - env | grep -e COGNITO_ >> .env.production
+        - env | grep -e NEXT_PUBLIC_ >> .env.production
+        - env | grep -e AUTH_ >> .env.production
+        - env | grep -e API_ >> .env.production
+        - env | grep -e SENTRY_AUTH_TOKEN >> .env.production
         - npm run build
   artifacts:
     baseDirectory: .next
