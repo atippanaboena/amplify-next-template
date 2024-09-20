@@ -5,6 +5,7 @@ import {
   CognitoUser,
   CognitoRefreshToken,
 } from 'amazon-cognito-identity-js';
+import { isTokenExpired } from '@/utils';
 
 const getPrefix = (path: string[]) => {
   if (path[0] === 'ops') {
@@ -89,7 +90,14 @@ async function handleProxyRequest(method: string, request: Request, params: { pa
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error: any) {
-    if (error.response?.status === 401 && session?.user?.image && session?.user?.email) {
+    if ((error.response?.status === 401 || error.response?.status === 403) && session?.user?.image && session?.user?.email) {
+      if (error.response?.status === 403) {
+        const isExpired = isTokenExpired(session.user.name || '');
+        if (!isExpired) {
+          return;
+        }
+      }
+      console.log('Token expired, refreshing...');
       // Handle token refresh if we get a 401 Unauthorized
       try {
         // Get a new access token using the refresh token
@@ -114,6 +122,7 @@ async function handleProxyRequest(method: string, request: Request, params: { pa
     }
     // console.error('Error making request:', error);
     // If the error is not 401 or there's no refresh token, return the error
+    console.error('Error making request:', error.response?.data || error.message);
     return new Response(JSON.stringify({ error: error.message }), { status: 400 });
   }
 }

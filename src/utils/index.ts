@@ -1,3 +1,5 @@
+import { jwtDecode } from 'jwt-decode';
+
 type ParsedAddress = {
     address1: string;
     address2: string;
@@ -60,3 +62,16 @@ export const extractAddress = (addressComponents: google.maps.GeocoderAddressCom
         zip,
     };
 }
+
+export const isTokenExpired = (token: string) => {
+    if (!token) return true;
+    try {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        console.log('Token expiration:', decodedToken.exp, currentTime);
+        return decodedToken.exp && (decodedToken.exp < currentTime);
+    } catch (error) {
+        console.error('Error decoding token:', error);
+        return true;
+    }
+};

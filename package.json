@@ -31,6 +31,7 @@
     "amazon-cognito-identity-js": "^6.3.12",
     "aws-amplify": "^6.4.0",
     "axios": "^1.7.7",
+    "jwt-decode": "^4.0.0",
     "moment": "^2.30.1",
     "next": "14.2.8",
     "next-auth": "^5.0.0-beta.20",
