@@ -26,7 +26,7 @@ export default function Header() {
   };
 
   const handleLogout = async () => {
-    await signOut();
+    await signOut({ redirectTo: "/", redirect: true });
   };
 
   if (session.status === "loading" || session.status === "unauthenticated") {
@@ -35,7 +35,7 @@ export default function Header() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar color='info' position="fixed" sx={{ zIndex: (theme:any) => theme.zIndex.drawer + 1 }}>
+      <AppBar color="info" position="fixed" sx={{ zIndex: (theme: any) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <IconButton onClick={() => setOpen(!open)} size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
             <MenuIcon />

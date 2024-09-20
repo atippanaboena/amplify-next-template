@@ -108,7 +108,7 @@ async function handleProxyRequest(method: string, request: Request, params: { pa
         });
       } catch (refreshError) {
         // If refreshing the token fails, return an error
-        signOut(); // Sign out the user if the refresh token is invalid
+        signOut({ redirectTo: '/', redirect: true }); // Sign out the user if the refresh token is invalid
         return new Response(JSON.stringify({ error: 'Unable to refresh token' }), { status: 401 });
       }
     }
