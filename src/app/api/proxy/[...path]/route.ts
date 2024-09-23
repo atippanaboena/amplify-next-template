@@ -1,11 +1,6 @@
 import { auth, signOut } from '@/auth'; // Assuming your auth function provides the session
 import axios from 'axios';
-import {
-  CognitoUserPool,
-  CognitoUser,
-  CognitoRefreshToken,
-} from 'amazon-cognito-identity-js';
-import { isTokenExpired } from '@/utils';
+import { getToken } from 'next-auth/jwt';
 
 const getPrefix = (path: string[]) => {
   if (path[0] === 'ops') {
@@ -14,37 +9,23 @@ const getPrefix = (path: string[]) => {
   return process.env.API_PORTAL_URL;
 }
 
-// Function to get a new access token using the refresh token
-const refreshAccessToken = async (refreshToken: string, username: string): Promise<string> => {
-  try {
-    const poolData = {
-      UserPoolId: process.env.COGNITO_USER_POOL_ID || '',
-      ClientId: process.env.COGNITO_CLIENT_ID || '',
-    };
-    const userPool = new CognitoUserPool(poolData);
-    const cognitoUser = new CognitoUser({
-      Username: username,
-      Pool: userPool,
-    });
-    const congnitoRefreshToken = new CognitoRefreshToken({ RefreshToken: refreshToken });
-    return new Promise((resolve, reject) => {
-      cognitoUser.refreshSession(congnitoRefreshToken, (err, session) => {
-        if (err) {
-          console.error('Error refreshing access token:', err);
-          reject('Unable to refresh access token');
-        }
-        resolve(session.getAccessToken().getJwtToken());
-      });
-    });
-  } catch (error) {
-    console.error('Error refreshing access token:', error);
-    throw new Error('Unable to refresh access token');
-  }
-}
+// Function to make the external API request
+const makeRequest = async (url: string, method: string, requestBody: any, authToken: string) => {
+  console.log('Making request:', method, url, requestBody);
+  return axios({
+    method,
+    url: url.toString(),
+    data: requestBody, // Only for POST, PUT, PATCH
+    headers: {
+      Authorization: `${authToken}`, // Use the provided access token
+      'Content-Type': 'application/json',
+    },
+  });
+};
 
 // Main handler for all request methods (GET, POST, PUT, PATCH, DELETE)
 async function handleProxyRequest(method: string, request: Request, params: { path: string[] }) {
-  const session = await auth(); // Get current session (assume it has refresh token and access token)
+  const token = await getToken({ req: request, secret: process.env.AUTH_SECRET || '' });
   const { path } = params;
   const prefix = getPrefix(path);
   const url = new URL(prefix + "/" + path.slice(1).join('/'));
@@ -53,8 +34,6 @@ async function handleProxyRequest(method: string, request: Request, params: { pa
   incomingUrl.searchParams.forEach((value, key) => {
     url.searchParams.append(key, value); // Append query parameters to the external API URL
   });
-
-  console.log('Request URL:', url.toString());
 
   // Prepare the request body for methods like POST, PUT, PATCH
   let requestBody = undefined;
@@ -66,23 +45,9 @@ async function handleProxyRequest(method: string, request: Request, params: { pa
     }
   }
 
-  // Function to make the external API request
-  const makeRequest = async (accessToken: string) => {
-    return axios({
-      method,
-      url: url.toString(),
-      data: requestBody, // Only for POST, PUT, PATCH
-      headers: {
-        Authorization: `${accessToken}`, // Use the provided access token
-        'Content-Type': 'application/json',
-      },
-    });
-  };
-
-
   try {
     // Try the request with the current access token
-    const response = await makeRequest(session?.user?.name || '');
+    const response = await makeRequest(url.toString(), method, requestBody, token?.idToken || '');
 
     // Return the successful response
     return new Response(JSON.stringify(response.data), {
@@ -90,38 +55,6 @@ async function handleProxyRequest(method: string, request: Request, params: { pa
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error: any) {
-    if ((error.response?.status === 401 || error.response?.status === 403) && session?.user?.image && session?.user?.email) {
-      if (error.response?.status === 403) {
-        const isExpired = isTokenExpired(session.user.name || '');
-        if (!isExpired) {
-          return;
-        }
-      }
-      console.log('Token expired, refreshing...');
-      // Handle token refresh if we get a 401 Unauthorized
-      try {
-        // Get a new access token using the refresh token
-        const newAccessToken = await refreshAccessToken(session.user.image, session.user.email);
-
-        // Update the session with the new access token (this may vary depending on how you store the session)
-        session.user.name = newAccessToken;
-
-        // Retry the request with the new access token
-        const retryResponse = await makeRequest(newAccessToken);
-
-        // Return the successful response from the retried request
-        return new Response(JSON.stringify(retryResponse.data), {
-          status: retryResponse.status,
-          headers: { 'Content-Type': 'application/json' },
-        });
-      } catch (refreshError) {
-        // If refreshing the token fails, return an error
-        signOut({ redirectTo: '/', redirect: true }); // Sign out the user if the refresh token is invalid
-        return new Response(JSON.stringify({ error: 'Unable to refresh token' }), { status: 401 });
-      }
-    }
-    // console.error('Error making request:', error);
-    // If the error is not 401 or there's no refresh token, return the error
     console.error('Error making request:', error.response?.data || error.message);
     return new Response(JSON.stringify({ error: error.message }), { status: 400 });
   }
