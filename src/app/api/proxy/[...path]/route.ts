@@ -25,7 +25,7 @@ const makeRequest = async (url: string, method: string, requestBody: any, authTo
 
 // Main handler for all request methods (GET, POST, PUT, PATCH, DELETE)
 async function handleProxyRequest(method: string, request: Request, params: { path: string[] }) {
-  const token = await getToken({ req: request, secret: process.env.AUTH_SECRET || '' });
+  const token = await getToken({ req: request, secret: process.env.AUTH_SECRET || '', secureCookie: false });
   const { path } = params;
   const prefix = getPrefix(path);
   const url = new URL(prefix + "/" + path.slice(1).join('/'));
