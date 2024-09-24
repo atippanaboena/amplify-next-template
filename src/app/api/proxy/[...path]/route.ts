@@ -47,6 +47,7 @@ async function handleProxyRequest(method: string, request: Request, params: { pa
 
   try {
     // Try the request with the current access token
+    console.log(token?.idToken, 'Token ID')
     const response = await makeRequest(url.toString(), method, requestBody, token?.idToken || '');
 
     // Return the successful response
